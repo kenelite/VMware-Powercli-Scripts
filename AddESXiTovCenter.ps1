@@ -7,7 +7,7 @@
 #vmware1,MyDatacenter1,root,abcdefg
 
 ##########################################################
-$vcenter = 103.160.174.131
+$vcenter = 10.1.1.10
 $Connect-VIServer $vcenter
 
 $vmlist = Import-CSV C:\Host_list.csv

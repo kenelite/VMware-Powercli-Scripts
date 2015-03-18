@@ -12,6 +12,8 @@
 .NOTES
 	20150316	Guoyu Wang
 	[+] Created
+	20150318	Guoyu Wang
+	[+] Updated the VMhost Cluster
 #>
 
 $Report = @()
@@ -23,7 +25,11 @@ ForEach ($VMhost in $VMhosts)
 		
 		Get-VMHost $VMhost | Where-object { $_.PowerState -eq "PoweredOn"} 
 		
-		$HostArray = "" | Select HostName, NumCpu, HostCpuUsed, CpuOver, MemoryTotalGB, HostMemUsed, MemOver
+		$HostArray = "" | Select Cluster, HostName, NumCpu, HostCpuUsed, CpuOver, MemoryTotalGB, HostMemUsed, MemOver
+		
+		$ClusterName = Get-VMHost $VMhost | Get-Cluster
+		
+		$HostArray.Cluster =  $ClusterName.Name
 		
 		$HostArray.HostName = $VMHost.Name
 		
@@ -55,20 +61,30 @@ ForEach ($VMhost in $VMhosts)
 			
 		if ($HostArray.NumCpu -gt $HostArray.HostCpuUsed )
 		{
-			$HostArray.CpuOver = "False"
+			$HostArray.CpuOver = "Normal"
 		}
+		
+		elseif ($HostArray.NumCpu -eq $HostArray.HostCpuUsed )
+		{
+			$HostArray.CpuOver = "Warning"
+		}		
 		else
 		{
-			$HostArray.CpuOver = "True"
+			$HostArray.CpuOver = "Error"
 		}
 		
 		if ($HostArray.MemoryTotalGB -gt $HostArray.HostMemUsed )
 		{
-			$HostArray.MemOver = "False"
+			$HostArray.MemOver = "Normal"
+		}
+		
+		elseif ($HostArray.MemoryTotalGB -eq $HostArray.HostMemUsed )
+		{
+			$HostArray.CpuOver = "Warning"
 		}
 		else
 		{
-			$HostArray.MemOver = "True"
+			$HostArray.MemOver = "Error"
 		}
 		
 		$Report += $HostArray
@@ -76,7 +92,13 @@ ForEach ($VMhost in $VMhosts)
 	}
 
 $Now = get-date  -Format "yyyy-MM-dd_hh_mm_ss"
-	
-$Report | Sort-Object HostName |  ConvertTo-Html  -Title "VMHost Resource over allocation details" -Body "<H3>VMHost Resource over allocation details</H3><H3>$Now</H3>"  > C:\$Now.html
 
-Invoke-Item C:\$Now.html
+$FilePath = (Get-location).Path
+
+$FileName = $FilePath+"\"+$Now+".html"
+	
+$Report | Sort-Object -property @{Expression="Cluster";Descending=$false}, @{Expression="HostName";Descending=$false} |  ConvertTo-Html  -Title "VMHost Resource over allocation details" -Body "<H3>VMHost Resource over allocation details</H3><H3>$Now</H3>"  > $FileName.html
+
+
+
+

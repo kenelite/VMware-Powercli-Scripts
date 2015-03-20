@@ -80,7 +80,7 @@ ForEach ($VMhost in $VMhosts)
 		
 		elseif ($HostArray.MemoryTotalGB -eq $HostArray.HostMemUsed )
 		{
-			$HostArray.CpuOver = "Warning"
+			$HostArray.MemOver = "Warning"
 		}
 		else
 		{

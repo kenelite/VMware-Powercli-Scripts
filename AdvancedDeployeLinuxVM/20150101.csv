@@ -1,0 +1,2 @@
+Basevm,Datastore,VMhost,Custspec,VMname,Cpu,Memory,Disk1,Disk2,IPaddress,Subnet,Gateway,VLAN,IPaddress2,Subnet2,Gateway2,VLAN2,Note
+rhel-template,localdisk-exi01,10.10.1.11,rhel-spec,vm100.example.com,2,4,50,100,10.10.2.11,255.255.255.0,10.10.2.1,VLAN100,20.10.2.11,255.255.255.0,20.10.2.1,VLAN200,Test
